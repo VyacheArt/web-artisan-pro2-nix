@@ -1,0 +1,88 @@
+name: Update
+
+# The app's release workflow runs this after each release: sources.json and
+# flake.lock are committed once both architectures build. Pushes and pull
+# requests only build.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+
+# Runs queue, and each checks out the branch tip, so a queued run commits on
+# top of the previous one.
+concurrency: update
+
+permissions:
+  contents: read
+
+jobs:
+  sources:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+
+      - name: Update
+        run: |
+          ./update.sh
+          nix flake update
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: sources
+          path: |
+            sources.json
+            flake.lock
+
+  check:
+    needs: sources
+    # Also runs when sources is skipped
+    if: ${{ !failure() && !cancelled() }}
+    strategy:
+      matrix:
+        runner: [ubuntu-24.04, ubuntu-24.04-arm]
+    runs-on: ${{ matrix.runner }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.ref }}
+
+      - uses: actions/download-artifact@v8
+        if: needs.sources.result == 'success'
+        with:
+          name: sources
+
+      - name: Install Nix
+        uses: cachix/install-nix-action@v31
+
+      - name: Check
+        run: nix flake check -L
+
+  commit:
+    needs: check
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.ref }}
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: sources
+
+      - name: Commit
+        run: |
+          git diff --quiet && exit 0
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -am "$(jq -r 'to_entries | map("\(.key) \(.value.version)") | join(", ")' sources.json)"
+          git push
