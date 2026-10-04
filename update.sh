@@ -31,8 +31,12 @@ for channel in stable beta; do
   esac
 
   version=$(jq -r .version "$work/manifest.json")
-  jq -r '.files[] | select(.os == "linux") | "\(.arch) \(.url) \(.sha256)"' \
-    "$work/manifest.json" > "$work/files"
+  jq -r '.files[] | select(.os == "linux" and (.url | endswith(".tar.gz")))
+    | "\(.arch) \(.url) \(.sha256)"' "$work/manifest.json" > "$work/files"
+  if [ ! -s "$work/files" ]; then
+    echo "update: $channel.json has no Linux archives" >&2
+    exit 1
+  fi
   while read -r arch url sha256; do
     case $arch in
       x64) system=x86_64-linux ;;
