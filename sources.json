@@ -1,13 +1,13 @@
 {
   "beta": {
-    "version": "2.0.0-beta.9",
+    "version": "2.0.0-beta.10",
     "aarch64-linux": {
-      "url": "https://cdn.web-artisan.pro/releases/2.0.0-beta.9/web-artisan-pro-2.0.0-beta.9-linux-arm64.tar.gz",
-      "hash": "sha256-Mf8+pEIddjsB0KvXQu3hg+CTr9FLZNtX5zjTArRt2uM="
+      "url": "https://cdn.web-artisan.pro/releases/2.0.0-beta.10/web-artisan-pro-2.0.0-beta.10-linux-arm64.tar.gz",
+      "hash": "sha256-sOEjOj/J4kWjaa+UbZkzawlnCv8iRz0GdmLuRs4vcRo="
     },
     "x86_64-linux": {
-      "url": "https://cdn.web-artisan.pro/releases/2.0.0-beta.9/web-artisan-pro-2.0.0-beta.9-linux-x64.tar.gz",
-      "hash": "sha256-1qH9ysFbyv+uLWrITZARjn/1NpE/hyIZa7Mk2ZITogw="
+      "url": "https://cdn.web-artisan.pro/releases/2.0.0-beta.10/web-artisan-pro-2.0.0-beta.10-linux-x64.tar.gz",
+      "hash": "sha256-gctECi0Ge0o+t/QE5n2PdMKvng4kavqJC9NAVJp4rFs="
     }
   }
 }
