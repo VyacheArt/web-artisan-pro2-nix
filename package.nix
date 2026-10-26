@@ -7,6 +7,7 @@
   gtk3,
   libepoxy,
   fontconfig,
+  wayland,
   xclip,
   wl-clipboard,
   source,
@@ -29,6 +30,8 @@ stdenv.mkDerivation {
     gtk3
     libepoxy
     fontconfig
+    # The runner links libwayland-client for the palette of KWin's title bar.
+    wayland
     stdenv.cc.cc.lib
   ];
 
